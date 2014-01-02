@@ -7,12 +7,48 @@ Author: Xiaoying Tian
 from __future__ import division
 import re
 
+'''
+To Do: Add attributes like gender and race to the object
+'''
+
+prefix = {'Ms':'Adult female', 'Miss':'Unmarried female', 'Mr':'Adult male',
+        'Ms.':'Adult female', 'Mr.':'Adult male', 'Mrs.':'Married female', 
+        'Mrs': 'Married female', 'Master':'Male child', 'Rev.':'Reverend', 
+        'Fr.':'Father', 'Dr.':'Doctor', 'Atty.':'Attorney', 'Prof.':'Professor',
+        'Hon.':'Honorable', 'Pres.':'President', 'Gov.':'Governor', 'Sen.':'Senator',
+        'Rep.':'Representative', 'Amb.':'Ambassador', 'Treas.':'Treasurer',
+        'Sec.':'Secretary', 'Pvt.':'Private', 'Cpl.':'Corporal', 'Sgt.':'Sargent',
+        'Adm.':'Administrative', 'Maj.':'Major', 'Capt.':'Captain', 'Cmdr.':'Commander',
+        'Lt.':'Lieutenant', 'Lt Col.':'Lieutenant Colonel', 'Col.':'Colonel',
+        'Gen.':'General'} 
+
+suffix = {'PhD':'PhD', 'Ph.D.':'PhD', 'JD.':'JD', 'MD.':'MD',
+        'J.D.':'JD', 'M.D.':'MD', 'JD':'JD', 'MD':'MD', 'Jr':'Junior', 
+        'Sr':'Senior', 'BA':'BA', 'B.A.':'BA', 'MBA':'MBA', 
+        'M.B.A':'MBA', 'BS':'BS', 'B.S.':'BS',
+        'MA':'MA', 'M.A.':'MA', 'MS':'MS', 'M.S.':'MS'}
+
+
 class names():
     def __init__(self, namestr):
         self.name = {}
-        m = re.match(r'[ ]*(\w(?:\.|\w+))?[ ]*(,)?[ ]*(\w(?:\.|\w+)[ ]+)*(\w(?:\.|\w+))', namestr)
+        self.prefix  = []
+        self.suffix = []
+        #strip the name string of the prefix and the suffix
+        tokens = re.split('\s+', namestr)        
+        print tokens
+        for token in tokens:
+            if token.strip(',') in prefix:
+                namestr = re.sub(token, '', namestr)
+                self.prefix.append(prefix[token.strip(',')])
+            elif token.strip(',') in suffix:
+                namestr = re.sub(token, '', namestr)
+                self.suffix.append(suffix[token.strip(',')])
+        print namestr
+        m = re.match(r'[ ]+(\w(?:\.|\w+))?[ ]*(,)?[ ]*(\w(?:\.|\w+)[ ]+)*(\w(?:\.|\w+))',namestr)
         if m:
             names = m.groups()
+            print(names)
             #deals with the case 'lastname, firstname (middlename)'
             if ',' in names: 
                 names = [name.strip() for name in list(names) if name != None and name != ',']
@@ -31,23 +67,18 @@ class names():
                     self.name['middle_name'] = names[1]
                     self.name['last_name'] = names[2]
 
-    ''' to do:
-    handle single name (indicate first name) and
-    single last name
-    '''
 
     def __str__(self):
         return("First name: " + self.name['first_name'] + '\n'  
             + "Last name: " + self.name['last_name'])
 
 def main():
-    xiaoying = names(' Xiaoying     Tian')
-#    m = re.match(r'[ ]*(\w+) (\w+)', 'Xiaoying Tian')
-#    if m:
-#        print(m.groups())
-
+    xiaoying = names('Miss X.     Tian, Ph.D., J.D.')
     print xiaoying
-#    print(xiaoying.name)
+    print xiaoying.prefix
+    print xiaoying.suffix
+
+#    print xiaoying.name
     pass
 
 if __name__ == "__main__":
