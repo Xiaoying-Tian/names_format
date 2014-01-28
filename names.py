@@ -5,7 +5,9 @@ Author: Xiaoying Tian
 """
 
 from __future__ import division
+import sys
 import re
+import doctest
 
 '''
 To Do: Add attributes like gender and race to the object
@@ -30,25 +32,33 @@ suffix = {'PhD':'PhD', 'Ph.D.':'PhD', 'JD.':'JD', 'MD.':'MD',
 
 
 class names():
+    """
+    Use like this:
+
+    >>> from names import names
+    >>> xiaoying = names("Xiaoying Tian")
+    >>> xiaoying.name["first_name"] == "Xiaoying"
+    True
+
+    """
     def __init__(self, namestr):
         self.name = {}
         self.prefix  = []
         self.suffix = []
         #strip the name string of the prefix and the suffix
         tokens = re.split('\s+', namestr)        
-        print tokens
         for token in tokens:
             if token.strip(',') in prefix:
                 namestr = re.sub(token, '', namestr)
                 self.prefix.append(prefix[token.strip(',')])
+                print 'here'
             elif token.strip(',') in suffix:
                 namestr = re.sub(token, '', namestr)
                 self.suffix.append(suffix[token.strip(',')])
-        print namestr
-        m = re.match(r'[ ]+(\w(?:\.|\w+))?[ ]*(,)?[ ]*(\w(?:\.|\w+)[ ]+)*(\w(?:\.|\w+))',namestr)
+                print 'here'
+        m = re.match(r'[ ]*(\w(?:\.|\w+))?[ ]*(,)?[ ]*(\w(?:\.|\w+)[ ]+)*(\w(?:\.|\w+))',namestr)
         if m:
             names = m.groups()
-            print(names)
             #deals with the case 'lastname, firstname (middlename)'
             if ',' in names: 
                 names = [name.strip() for name in list(names) if name != None and name != ',']
@@ -59,27 +69,31 @@ class names():
             #deals with the case 'firstname (middlename) lastname'
             else:
                 names = [name.strip() for name in list(names) if name != None]
-                print(names)
                 self.name['first_name'] = names[0]
                 if len(names) == 2:
                     self.name['last_name'] = names[1]
                 elif len(names) == 3:
                     self.name['middle_name'] = names[1]
                     self.name['last_name'] = names[2]
+        else:
+            raise ValueError('Could not parse')
+
+         
 
 
     def __str__(self):
-        return("First name: " + self.name['first_name'] + '\n'  
+        return("First name: " + self.name['first_name'] + '\n'
             + "Last name: " + self.name['last_name'])
 
 def main():
+    """
     xiaoying = names('Miss X.     Tian, Ph.D., J.D.')
     print xiaoying
     print xiaoying.prefix
     print xiaoying.suffix
+    """
 
-#    print xiaoying.name
-    pass
 
 if __name__ == "__main__":
+    doctest.testmod()
     main()
